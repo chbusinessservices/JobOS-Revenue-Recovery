@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --jobos-bg: #0A0F1C;
+  --jobos-surface: #111827;
+  --jobos-surface-2: #1F2937;
+  --jobos-border: rgba(255, 255, 255, 0.08);
+  --jobos-purple: #7C5CFC;
+  --jobos-mint: #00E5A8;
+  --jobos-amber: #F59E0B;
+  --jobos-text: #F3F4F6;
+  --jobos-text-2: #9CA3AF;
+  --jobos-text-3: #6B7280;
+}
+
+@layer base {
+  :root {
+    --background: 222 47% 7%;
+    --foreground: 210 20% 96%;
+    --card: 217 33% 12%;
+    --card-foreground: 210 20% 96%;
+    --popover: 217 33% 12%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 253 96% 68%;
+    --primary-foreground: 210 20% 96%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 20% 96%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 220 9% 60%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 20% 96%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 96%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 253 96% 68%;
+    --radius: 0.65rem;
+  }
+}
+
+* {
+  border-color: var(--jobos-border);
+}
+
+html, body, #root {
+  background-color: var(--jobos-bg);
+  color: var(--jobos-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+}
+
+h1, h2, h3, h4, .jobos-heading {
+  font-family: 'Manrope', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--jobos-bg); }
+::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+/* Focus rings */
+:focus-visible {
+  outline: 2px solid var(--jobos-purple);
+  outline-offset: 2px;
+}
+
+/* Utility */
+.jobos-surface {
+  background-color: var(--jobos-surface);
+  border: 1px solid var(--jobos-border);
+  border-radius: 14px;
+}
+
+.jobos-surface-2 {
+  background-color: var(--jobos-surface-2);
+  border: 1px solid var(--jobos-border);
+  border-radius: 12px;
+}
+
+.jobos-gradient-text {
+  background: linear-gradient(90deg, #F3F4F6 0%, #C7D2FE 60%, #A5F3E1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.jobos-dot {
+  width: 8px; height: 8px; border-radius: 999px; display: inline-block;
+}
+
+/* Card lift */
+.jobos-card-hover {
+  transition-property: transform, border-color, background-color;
+  transition-duration: 180ms;
+}
+.jobos-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124, 92, 252, 0.4);
+}
+
+/* Enter animation */
+@keyframes jobos-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.jobos-enter {
+  animation: jobos-fade-up 240ms ease-out both;
+}
+
+/* Landing background */
+.jobos-landing-bg {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(124, 92, 252, 0.25), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(0, 229, 168, 0.18), transparent 45%),
+    #0A0F1C;
+}

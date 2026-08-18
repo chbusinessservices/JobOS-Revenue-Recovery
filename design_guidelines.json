@@ -1,0 +1,144 @@
+{
+  "project_name": "JobOS Revenue Recovery",
+  "theme": "dark",
+  "brand_archetype": "THE PERFORMANCE PRO / COMMAND CENTER HYBRID",
+  "typography": {
+    "headings": {
+      "family": "Manrope",
+      "weights": ["600", "700", "800"],
+      "tracking": "tracking-tight",
+      "forbidden": ["Inter", "Roboto", "Open Sans", "Space Grotesk"]
+    },
+    "body": {
+      "family": "Inter",
+      "weights": ["400", "500"]
+    },
+    "hierarchy_rules": "Max heading text-4xl to text-5xl on desktop. Keep jumps between sizes to max 2 Tailwind steps."
+  },
+  "colors": {
+    "background": {
+      "base": "#0A0F1C",
+      "surface": "#111827",
+      "surface_hover": "#1F2937"
+    },
+    "primary_accent": "#7C5CFC",
+    "success_mint": "#00E5A8",
+    "warning": "#F59E0B",
+    "text": {
+      "primary": "#F3F4F6",
+      "secondary": "#9CA3AF",
+      "muted": "#6B7280"
+    },
+    "borders": "rgba(255, 255, 255, 0.1)",
+    "rules": "No full-screen gradients. Do not use teal green (#1B93A4) per E1 rules. Do not use complete transparent backgrounds in overlays."
+  },
+  "visual_enhancers": {
+    "surfaces": "Flat Solid surfaces with 1px subtle borders (border-white/10). No muddy gray transparency.",
+    "shadows": "Ambient diffuse shadows for floating elements, otherwise flat for data density.",
+    "badges": "Use highly legible pills with 10% opacity backgrounds of their respective colors and 100% opacity text.",
+    "borders": "1px solid strokes to separate elements in dark mode."
+  },
+  "grids_and_layouts": {
+    "dashboard_mode": "High Density Grid. Base grid-cols-1 md:grid-cols-3 lg:grid-cols-4. Gap-4 to gap-6. Every pixel utilized. h-full on children.",
+    "mobile": "Tables convert to Cards. Detail views use Bottom Sheets (Drawers).",
+    "desktop": "Left-side navigation (w-64). Structured dashboard, side-by-side context panels."
+  },
+  "motion_and_interactions": {
+    "hover": "Explicit text color on hover. Row highlights in tables. Lift (-translate-y-1) on cards.",
+    "transitions": "Specific transitions only (e.g., transition-colors, transition-transform). Never transition-all.",
+    "loading": "Skeleton loaders matching the dark mode surface color. Subtle pulse."
+  },
+  "components": [
+    {
+      "name": "Badge",
+      "instructions": "Use for statuses: Detected (Blue), Draft Ready (Purple), Needs Approval (Amber), Approved (Mint), Sent (Gray), Replied (Purple), Appointment Booked (Mint). Use soft backgrounds with bright text."
+    },
+    {
+      "name": "Tables",
+      "instructions": "Data-dense but readable. Use 1px bottom borders for rows. Convert to vertical stack cards on mobile. Left align tabular data."
+    },
+    {
+      "name": "Drawer / Sheet",
+      "instructions": "Use for the Customer Revenue Memory profile on mobile and slide-outs on desktop. Ensure strong solid backgrounds, not transparent."
+    },
+    {
+      "name": "Charts",
+      "instructions": "Use Recharts. Minimalist axes. Lines should use the Mint and Purple accents."
+    }
+  ],
+  "pages_and_views": [
+    {
+      "name": "Demo Entry / Login",
+      "layout": "Centered card over dark abstract navy texture. Button: 'Enter Demo Workspace'."
+    },
+    {
+      "name": "Revenue Pulse Dashboard",
+      "layout": "KPI cards top row (Revenue at Risk, Recovered, Appointments booked, Follow-ups due, Response speed). Opportunity trend chart spanning 2-3 columns. Agent activity feed and Needs Approval list widget."
+    },
+    {
+      "name": "Opportunity Inbox",
+      "layout": "Tabs for categories (New Leads, Missed Calls, Open Estimates, Repeat Customers). Search/filter bar. Data table/cards with status badges."
+    },
+    {
+      "name": "Customer Revenue Memory Profile",
+      "layout": "Split view: Timeline/Audit on one side, Opportunity card (AI rationale, draft preview, value) on the other. Includes 'Needs Approval' CTA."
+    },
+    {
+      "name": "Approval Center",
+      "layout": "High-trust review workspace. Side-by-side or focused layout showing proposed message, workflow name, reasoning vs customer context. Large accessible Approval actions."
+    },
+    {
+      "name": "Workflow Builder",
+      "layout": "Stack of editable configuration panels (Trigger conditions, Business hours, Contact channel, Message tone, Follow-up timing, Approval mode, Stop rules). NOT drag-and-drop."
+    },
+    {
+      "name": "Impact Report",
+      "layout": "Comparison selectors, split metrics (Estimated/Modeled vs Recorded), Methodology info panel, simulated export."
+    },
+    {
+      "name": "Settings",
+      "layout": "Minimalist layout with a 'Reset Demo Data' control."
+    }
+  ],
+  "image_urls": [
+    {
+      "category": "Customer Avatar (Maya Thompson)",
+      "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMHdvbWFufGVufDB8fHx8MTc4NzA5MjIxM3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Professional headshot of a woman to represent Maya Thompson"
+    },
+    {
+      "category": "Demo Context / HVAC Graphic",
+      "url": "https://images.pexels.com/photos/6471911/pexels-photo-6471911.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Technician checking HVAC system outdoors, can be used contextually on the login or impact report page"
+    },
+    {
+      "category": "Login Background",
+      "url": "https://images.pexels.com/photos/30018101/pexels-photo-30018101.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Dark blue abstract textured background for the Demo Entry page"
+    }
+  ],
+  "accessibility": {
+    "contrast": "Maintain WCAG AA standards. Use text shadows over images if necessary.",
+    "testing": "All interactive and key informational elements MUST include a data-testid attribute to facilitate robust automated testing.",
+    "focus": "High contrast focus rings (ring-purple-500)."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Use Javascript (.js/.jsx), NOT Typescript (.tsx).",
+    "Never use generic AI emojis (🤖🧠💡). Use Lucide icons instead.",
+    "Never use transition-all. Target specific properties.",
+    "Do not use complete transparent backgrounds for overlays, headers, or dropdowns. Use solid backgrounds like bg-slate-900 or heavy backdrop-blur.",
+    "Do not center-align the main App container (.App { text-align: center; } is strictly forbidden).",
+    "Enforce generous padding: Use p-6, p-8 inside cards, keeping text away from borders.",
+    "Include the persistent 'Demo Mode — Fictional Data' badge in the main header of the dashboard layout.",
+    "Build custom interactive UI with standard HTML + Tailwind where Shadcn isn't required, but use Shadcn for standard form inputs, dialogs, drawers, and tabs.",
+    "Always wrap dynamic route/state changes with subtle enter animations."
+  ],
+  "instructions_to_main_agent": [
+    "Start by generating the common Layout containing the Left Navigation and the Top Header (which includes the Demo Mode badge).",
+    "Develop the Revenue Pulse Dashboard using Grid CSS with specific spans for charts and lists.",
+    "Use fictional data for 'Northstar Heating & Air' located in Newark, NJ.",
+    "Implement the Opportunity Inbox, switching from table on desktop to stacked cards on mobile.",
+    "Develop the Approval Center and Workflow Builder using standard forms and stacked panels (no drag and drop).",
+    "Ensure the application strictly follows the color palette: Deep Navy (#0A0F1C to #111827), Purple (#7C5CFC), and Mint (#00E5A8)."
+  ]
+}

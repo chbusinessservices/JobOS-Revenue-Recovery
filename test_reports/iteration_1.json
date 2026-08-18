@@ -1,0 +1,27 @@
+{
+  "summary": "First-finish smoke: backend session/dashboard/opportunities/approvals/workflows/impact endpoints all healthy. Maya E2E validated end-to-end via curl (approve_and_send -> book_appointment; recovered $6,285->$6,710, appts 17->18). Frontend: landing loads, Enter Demo Workspace navigates to /app/dashboard, all 5 KPI cards visible with correct values, Demo Mode badge visible, Maya detail page loads with customer email, seeded SMS draft, ledger, audit timeline, and Approve+Send succeeds (success dialog 'Message sent (simulated)' with Continue button; audit timeline shows Approved + Sent events).",
+  "tested_scope": ["backend", "frontend", "integration"],
+  "passed": [
+    "POST /api/demo/session creates session (session_id returned)",
+    "GET /api/demo/{sid}/dashboard returns all KPIs with expected seed values ($18,740 at risk, $6,285 recovered, 17 appts, 12 follow-ups, 78%/34% response)",
+    "GET /api/demo/{sid}/opportunities returns 7 opportunities including opp-maya (Needs Approval, $425)",
+    "GET /api/demo/{sid}/approvals returns queue",
+    "GET /api/demo/{sid}/workflows returns wf-lead-rescue, wf-estimate-recovery, wf-repeat-revenue",
+    "GET /api/demo/{sid}/impact returns estimated/modeled/recorded groupings + methodology text",
+    "POST action approve_and_send moves opp-maya to 'Sent'",
+    "POST action book_appointment moves to 'Appointment Booked' and increments recovered_revenue by $425 and appointments_booked by 1",
+    "Landing page loads with enter-demo-workspace-btn; click navigates to /app/dashboard",
+    "Dashboard KPI cards (kpi-revenue-at-risk, kpi-recovered-revenue, kpi-appointments-booked, kpi-follow-ups-due, kpi-response-time) visible with correct labels/values",
+    "Demo Mode - Fictional Data badge visible in header",
+    "Maya detail page shows email, phone, seeded SMS draft, ledger, audit timeline, approve-and-send-btn",
+    "Approve+Send from UI triggers success dialog and updates audit timeline with Approved + Sent events"
+  ],
+  "failed": [],
+  "action_items": [
+    "Non-blocking: request note that success dialog uses 'Continue' button, not 'OK'. Consider adding data-testid='dialog-continue-btn' on the success dialog CTA to make automation more robust.",
+    "Full testing pass should cover: draft edit flow, Regenerate with AI (both success and fallback), workflow pause toggle, workflow Test button toast, Impact methodology popover + Export button, Settings Reset Demo Data + Create new session, session persistence across refresh, mobile responsive (400px), and session isolation across two session_ids."
+  ],
+  "success_rate": {"backend": "100%", "frontend": "90%"},
+  "retest_needed": false,
+  "full_testing_deferred": true
+}
