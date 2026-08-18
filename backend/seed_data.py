@@ -1,4 +1,5 @@
 """Canonical seed data for the Northstar Heating & Air demo scenario."""
+import copy
 from datetime import datetime, timedelta, timezone
 
 
@@ -456,7 +457,7 @@ def _seed_agent_feed():
 def build_seed_state():
     opps = _seed_opportunities()
     return {
-        "business": BUSINESS,
+        "business": copy.deepcopy(BUSINESS),
         "customers": _seed_customers(),
         "opportunities": opps,
         "workflows": _seed_workflows(),

@@ -108,10 +108,7 @@ def compute_dashboard(state: dict) -> dict:
 
 
 def compute_impact(state: dict) -> dict:
-    opps = state["opportunities"]
     biz = state["business"]
-    booked = [o for o in opps if o["status"] == "Appointment Booked"]
-    recovered_from_flow = sum(o["expected_value"] for o in booked)
     return {
         "estimated": {
             "revenue_pipeline": biz["estimated_recoverable_revenue"],
@@ -123,8 +120,8 @@ def compute_impact(state: dict) -> dict:
             "reactivations": 9,
         },
         "recorded": {
-            "recovered_revenue": biz["recorded_recovered_revenue"] + recovered_from_flow,
-            "appointments_booked": biz["appointments_booked_this_month"] + len(booked),
+            "recovered_revenue": biz["recorded_recovered_revenue"],
+            "appointments_booked": biz["appointments_booked_this_month"],
         },
         "methodology": (
             "Estimated pipeline value is modeled from active opportunities. "
