@@ -50,6 +50,18 @@ uses fictional data for Northstar Heating & Air in Newark, New Jersey.
 - Hybrid AI drafting with strict JSON validation and seeded fallback.
 - Responsive mobile layout with card-based inbox and horizontal mobile nav.
 
+## Iteration 2 additions (2026-02-19) — tested 100% backend + frontend
+- **Snooze Options** with 5 modes (1h, Tomorrow 9AM, Next business day, Next week, Custom).
+  Auto-wake when `snoozed_until` passes; audit adds `Snoozed` + `Snooze Ended` events.
+  Snooze Queue tab in Opportunity Inbox; Approval Center excludes snoozed items.
+- **Owner Insights "What's Working"** module on Impact Report — comparison table across
+  the three workflows using demo-session data, single careful recommendation, disclaimer.
+- **Batch Approval** for Repeat Revenue seasonal tune-up campaigns ONLY. Explicitly excludes
+  missed calls, new leads, and high-value estimates. Review dialog shows recipient count,
+  criteria, exclusions, preview + `Approve N Demo Drafts` confirmation.
+- **Print-friendly report view** via `@media print` on `.jobos-print-area` +
+  simulated `Exported ✓` state (real PDF deferred).
+
 ## Backlog (prioritized)
 ### P1 — polish and depth
 - Real PDF export for Impact Report (currently simulated success).

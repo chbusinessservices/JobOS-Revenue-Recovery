@@ -10,7 +10,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import StatusBadge, { UrgencyPill } from "@/components/StatusBadge";
-import { Sparkles, Check, X, Edit3, Clock, UserPlus, Pause, CalendarCheck, ChevronLeft, MessageSquare } from "lucide-react";
+import { Sparkles, Check, X, Edit3, Clock, UserPlus, Pause, CalendarCheck, ChevronLeft, MessageSquare, BellRing } from "lucide-react";
+import SnoozeMenu from "@/components/SnoozeMenu";
 
 function fmt(ts) {
   if (!ts) return "—";
@@ -210,9 +211,8 @@ export default function OpportunityDetailPage() {
                 <Button onClick={approveAndSend} className="bg-[#00E5A8] hover:bg-[#00c896] text-slate-900 font-semibold" data-testid="approve-and-send-btn">
                   <Check size={15} className="mr-1" /> Approve and Send
                 </Button>
-                <Button onClick={() => act("snooze")} variant="outline" className="bg-transparent border-white/10 text-slate-200 hover:bg-white/5" data-testid="snooze-btn">
-                  <Clock size={14} className="mr-1" /> Snooze
-                </Button>
+                <SnoozeMenu onSnooze={(payload) => act("snooze", payload)} />
+
                 <Button onClick={() => act("assign", { assignee: "Ops Team" })} variant="outline" className="bg-transparent border-white/10 text-slate-200 hover:bg-white/5" data-testid="assign-btn">
                   <UserPlus size={14} className="mr-1" /> Assign
                 </Button>
@@ -225,6 +225,17 @@ export default function OpportunityDetailPage() {
               </div>
             )}
 
+            {o.status === "Snoozed" && (
+              <div className="mt-4 border-t border-white/5 pt-4 flex items-center justify-between gap-3" data-testid="snoozed-banner">
+                <div className="text-sm text-slate-300">
+                  <div className="flex items-center gap-2"><BellRing size={14} className="text-[#F59E0B]" /> Snoozed until {new Date(o.snoozed_until).toLocaleString()}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Demo simulation — will auto-wake when the scheduled time passes.</div>
+                </div>
+                <Button onClick={() => act("wake_snooze")} variant="outline" className="bg-transparent border-white/10 text-slate-200 hover:bg-white/5" data-testid="wake-now-btn">
+                  Wake now
+                </Button>
+              </div>
+            )}
             {o.status === "Sent" && (
               <div className="mt-4 border-t border-white/5 pt-4">
                 <div className="text-sm text-slate-300">Message state: <StatusBadge status="Sent" /></div>

@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Download, Info, LineChart as LineIcon } from "lucide-react";
+import { Download, Info, LineChart as LineIcon, Printer } from "lucide-react";
+import OwnerInsights from "@/components/OwnerInsights";
 
 function Metric({ label, value, kind, testid }) {
   const color = kind === "recorded" ? "#00E5A8" : kind === "modeled" ? "#7C5CFC" : "#F59E0B";
@@ -42,7 +43,7 @@ export default function ImpactReportPage() {
   if (!data) return <div className="text-slate-400">Loading impact…</div>;
 
   return (
-    <div className="space-y-5" data-testid="impact-report-page">
+    <div className="space-y-5 jobos-print-area" data-testid="impact-report-page">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="jobos-heading text-3xl font-bold">Impact Report</h1>
@@ -69,6 +70,9 @@ export default function ImpactReportPage() {
               {data.methodology}
             </PopoverContent>
           </Popover>
+          <Button onClick={() => window.print()} variant="outline" className="bg-transparent border-white/10 text-slate-200" data-testid="print-report-btn">
+            <Printer size={14} className="mr-1" /> Print view
+          </Button>
           <Button onClick={handleExport} className="bg-[#7C5CFC] hover:bg-[#6a4de0]" data-testid="export-report-btn">
             <Download size={14} className="mr-1" /> {exported ? "Exported ✓" : "Export report"}
           </Button>
@@ -99,6 +103,8 @@ export default function ImpactReportPage() {
           <Metric testid="impact-rec-appointments" kind="recorded" label="Appointments booked" value={data.recorded.appointments_booked} />
         </div>
       </div>
+
+      <OwnerInsights />
 
       <Card className="bg-[#111827] border-white/10 p-5" data-testid="impact-methodology-card">
         <div className="jobos-heading font-semibold mb-2">Methodology</div>

@@ -16,6 +16,7 @@ const TABS = [
   { key: "missed_calls", label: "Missed Calls" },
   { key: "open_estimates", label: "Open Estimates" },
   { key: "repeat_customers", label: "Repeat Customers" },
+  { key: "snoozed", label: "Snooze Queue" },
 ];
 
 function ageLabel(minutes) {

@@ -6,16 +6,18 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatusBadge, { UrgencyPill } from "@/components/StatusBadge";
 import { Shield } from "lucide-react";
+import BatchApprovalCard from "@/components/BatchApprovalCard";
 
 export default function ApprovalCenterPage() {
   const { sessionId } = useSession();
   const [queue, setQueue] = useState([]);
   const nav = useNavigate();
 
-  useEffect(() => {
+  function loadQueue() {
     if (!sessionId) return;
     api.get(`/demo/${sessionId}/approvals`).then(({ data }) => setQueue(data.queue));
-  }, [sessionId]);
+  }
+  useEffect(() => { loadQueue(); }, [sessionId]);
 
   return (
     <div className="space-y-5" data-testid="approval-center-page">
@@ -23,6 +25,8 @@ export default function ApprovalCenterPage() {
         <h1 className="jobos-heading text-3xl font-bold flex items-center gap-2"><Shield size={22} className="text-[#7C5CFC]" /> Approval Center</h1>
         <p className="text-slate-400 text-sm mt-1">High-trust review workspace. Nothing is sent until you approve.</p>
       </div>
+
+      <BatchApprovalCard onDone={loadQueue} />
 
       <div className="grid grid-cols-1 gap-3">
         {queue.map((o) => (

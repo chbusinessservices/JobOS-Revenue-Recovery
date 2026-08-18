@@ -1,0 +1,49 @@
+{
+  "summary": "Full E2E validation of iteration_2 new features: Snooze presets + auto-wake, Owner Insights 'What's Working', Batch Approval for Repeat Revenue only, Print/Export on Impact. Backend: 8/8 pytest passing (snooze/wake/auto-wake/insights/batch/eligibility/Maya-untouched). Frontend: Snooze menu (4 presets + custom), snoozed banner, wake-now, Snooze Queue tab shows Maya after snooze, Approval Center excludes snoozed items, BatchApprovalCard shows $548/2 recipients with correct criteria + exclusions, review dialog has 'Approve 2 Demo Drafts' button exact label, batch approve empties the card and leaves Maya untouched (Needs Approval), Impact page renders owner-insights + 3 workflow rows + recommendation + disclaimer + print-report-btn + export-report-btn (shows 'Exported ✓' + toast).",
+  "tested_scope": ["backend", "frontend", "integration"],
+  "passed": [
+    "POST snooze action sets status=Snoozed, snoozed_until, snooze_preset; audit gets 'Snoozed' event",
+    "GET /opportunities?category=snoozed returns Maya after snooze",
+    "GET /approvals excludes snoozed Maya",
+    "POST wake_snooze restores previous status=Needs Approval and appends 'Snooze Ended' audit",
+    "Auto-wake: snooze with past timestamp -> subsequent GET auto-wakes and appends 'Snooze Ended'",
+    "GET /insights returns 3 workflow rows (wf-lead-rescue, wf-estimate-recovery, wf-repeat-revenue) with required fields + recommendation + disclaimer",
+    "GET /batch/repeat-revenue returns exactly 2 eligible (opp-denise, opp-aisha) totaling $548, plus criteria",
+    "POST /batch/repeat-revenue/approve marks both eligible as Sent, audit 'Approved (Batch)' + 'Sent', card recount 0",
+    "Maya (missed call), Carlos (new lead), Samuel & Jordan (open estimates) not in batch eligible list",
+    "Maya remains Needs Approval after batch approval (safety)",
+    "UI: /app/opportunities/opp-maya shows snooze-btn -> snooze-menu with preset 1h/tomorrow_9am/next_business/next_week + snooze-custom-input + snooze-custom-apply",
+    "UI: after preset click, snoozed-banner + wake-now-btn appear with correct wake time text",
+    "UI: /app/inbox has 6th tab 'Snooze Queue' (data-testid=tab-snoozed) - filters to snoozed items only (Maya shows with Snoozed badge)",
+    "UI: Approval Center shows batch-approval-card at top titled 'Seasonal Tune-Up Reactivation' with $548, '2 eligible recipients', criteria + Excluded blocks",
+    "UI: open-batch-review-btn opens batch-review-dialog with batch-preview + batch-recipients + confirm-batch-approve-btn label EXACTLY 'Approve 2 Demo Drafts'",
+    "UI: After confirming batch, toast appears, card recount becomes '$0 / 0 eligible recipients'",
+    "UI: /app/impact shows owner-insights card 'What's Working' + insights-table (3 workflow rows) + insights-recommendation + insights-disclaimer",
+    "UI: print-report-btn and export-report-btn present; export shows 'Exported ✓' state + success toast ('Impact report exported (simulated)')",
+    "Session persistence across sidebar nav confirmed (localStorage jobos.session_id stable across /opportunities -> /inbox -> /approvals)"
+  ],
+  "failed": [],
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features.py",
+    "/app/test_reports/pytest/new_features.xml"
+  ],
+  "critical_code_review_comments": [
+    "Batch review dialog lacks per-recipient data-testid (e.g., batch-recipient-{id}) - only container batch-recipients has a testid. Non-blocking but would help automation.",
+    "Opportunity detail response does not include audit_trail; audit events are only accessible via GET /demo/{sid}/audit. Non-blocking, tests were adapted.",
+    "SessionContext reads localStorage on mount and validates via GET /demo/session/{id}; behaves correctly - confirmed no session drift across pages."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_new_features.py (new)"
+  ],
+  "success_rate": { "backend": "100%", "frontend": "100%" },
+  "seed_data_creation": "None - each test creates a fresh POST /demo/session",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All new iteration_2 features validated end-to-end. Backend pytest file /app/backend/tests/test_new_features.py covers snooze, auto-wake, insights, batch. Note: opp row testid on /app/inbox is 'inbox-row-{id}' not 'opp-row-{id}'. Batch confirm button label is EXACTLY 'Approve N Demo Drafts'. Audit events are at GET /demo/{sid}/audit (session-level), not embedded in opportunity."
+}

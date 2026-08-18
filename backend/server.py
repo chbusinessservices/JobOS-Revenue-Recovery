@@ -42,7 +42,32 @@ async def get_session(session_id: str) -> dict:
     doc = await db[SESSIONS].find_one({"session_id": session_id}, {"_id": 0})
     if not doc:
         raise HTTPException(status_code=404, detail="Session not found")
-    return doc
+    state = doc["state"]
+    # Auto-wake snoozes whose time has passed
+    changed = wake_due_snoozes(state)
+    if changed:
+        await save_session(session_id, state)
+    return {**doc, "state": state}
+
+
+def wake_due_snoozes(state: dict) -> bool:
+    now = datetime.now(timezone.utc)
+    changed = False
+    for o in state["opportunities"]:
+        if o.get("status") == "Snoozed" and o.get("snoozed_until"):
+            try:
+                until = datetime.fromisoformat(o["snoozed_until"].replace("Z", "+00:00"))
+            except Exception:
+                continue
+            if until <= now:
+                prev = o.get("previous_status") or "Needs Approval"
+                o["status"] = prev
+                o["previous_status"] = None
+                o["snoozed_until"] = None
+                append_audit(state, o["id"], o["customer_id"], "Snooze Ended", "System",
+                             f"Scheduled snooze elapsed. Restored status: {prev}.")
+                changed = True
+    return changed
 
 
 async def save_session(session_id: str, state: dict) -> None:
@@ -173,13 +198,18 @@ async def dashboard(session_id: str):
 
 # ------------------------ Opportunities ------------------------
 @api_router.get("/demo/{session_id}/opportunities")
-async def list_opportunities(session_id: str, category: Optional[str] = None, q: Optional[str] = None, sort: str = "urgency"):
+async def list_opportunities(session_id: str, category: Optional[str] = None, q: Optional[str] = None, sort: str = "urgency", status: Optional[str] = None):
     session = await get_session(session_id)
     state = session["state"]
     customers = {c["id"]: c for c in state["customers"]}
     opps = state["opportunities"]
     if category and category != "all":
-        opps = [o for o in opps if o["category"] == category]
+        if category == "snoozed":
+            opps = [o for o in opps if o["status"] == "Snoozed"]
+        else:
+            opps = [o for o in opps if o["category"] == category]
+    if status:
+        opps = [o for o in opps if o["status"] == status]
     if q:
         ql = q.lower()
         opps = [
@@ -265,8 +295,20 @@ async def opportunity_action(session_id: str, opp_id: str, payload: dict = Body(
         opp["status"] = "Lost"
         append_audit(state, opp_id, customer["id"], "Rejected", "Owner", payload.get("reason") or "Owner rejected the draft.")
     elif action == "snooze":
+        opp["previous_status"] = opp.get("status") if opp.get("status") != "Snoozed" else opp.get("previous_status")
+        opp["snoozed_until"] = payload.get("snoozed_until")
+        opp["snooze_preset"] = payload.get("preset")
         opp["status"] = "Snoozed"
-        append_audit(state, opp_id, customer["id"], "Snoozed", "Owner", payload.get("reason") or "Snoozed by owner.")
+        preset_label = payload.get("preset_label") or payload.get("preset") or "Custom"
+        detail = f"Snoozed ({preset_label}) until {opp['snoozed_until'] or 'unspecified'}. Demo simulation."
+        append_audit(state, opp_id, customer["id"], "Snoozed", "Owner", detail)
+    elif action == "wake_snooze":
+        prev = opp.get("previous_status") or "Needs Approval"
+        opp["status"] = prev
+        opp["previous_status"] = None
+        opp["snoozed_until"] = None
+        opp["snooze_preset"] = None
+        append_audit(state, opp_id, customer["id"], "Snooze Ended", "Owner", f"Owner woke snooze. Restored: {prev}.")
     elif action == "assign":
         opp["assigned_to"] = payload.get("assignee") or "Team"
         append_audit(state, opp_id, customer["id"], "Assigned", "Owner", f"Assigned to {opp['assigned_to']}.")
@@ -330,6 +372,127 @@ async def approvals(session_id: str):
             })
     queue = sorted(queue, key=lambda o: o["urgency_score"], reverse=True)
     return {"queue": queue}
+
+
+# ------------------------ Batch Approval (Repeat Revenue only) ------------------------
+BATCH_ELIGIBLE_STATUSES = ("Campaign Eligible", "Approval Required", "Ready", "Draft Ready")
+
+
+def _repeat_revenue_batch(state: dict):
+    workflow_id = "wf-repeat-revenue"
+    workflow = next((w for w in state["workflows"] if w["id"] == workflow_id), None)
+    customers = {c["id"]: c for c in state["customers"]}
+    # Only seasonal tune-up campaign eligible
+    eligible = [
+        {**o, "customer": customers.get(o["customer_id"], {})}
+        for o in state["opportunities"]
+        if o["workflow_id"] == workflow_id
+        and o["status"] in BATCH_ELIGIBLE_STATUSES
+        and o["service_need"] in ("Seasonal tune-up", "Annual maintenance")
+    ]
+    excluded = [
+        {**o, "customer": customers.get(o["customer_id"], {})}
+        for o in state["opportunities"]
+        if o["workflow_id"] == workflow_id
+        and o["service_need"] not in ("Seasonal tune-up", "Annual maintenance")
+    ]
+    return workflow, eligible, excluded
+
+
+@api_router.get("/demo/{session_id}/batch/repeat-revenue")
+async def batch_repeat_revenue(session_id: str):
+    session = await get_session(session_id)
+    state = session["state"]
+    workflow, eligible, excluded = _repeat_revenue_batch(state)
+    total_value = sum(o["expected_value"] for o in eligible)
+    preview_opp = eligible[0] if eligible else None
+    return {
+        "workflow": workflow,
+        "campaign_name": "Seasonal Tune-Up Reactivation",
+        "criteria": [
+            "Repeat Revenue workflow only",
+            "Service need: Seasonal tune-up or Annual maintenance",
+            "Status: Campaign Eligible / Approval Required / Draft Ready / Ready",
+            "Excludes missed calls, new leads, and high-value estimates",
+        ],
+        "eligible": eligible,
+        "excluded": excluded,
+        "recipient_count": len(eligible),
+        "estimated_value": total_value,
+        "estimated_value_label": "Estimated pipeline",
+        "preview": preview_opp,
+    }
+
+
+@api_router.post("/demo/{session_id}/batch/repeat-revenue/approve")
+async def batch_repeat_revenue_approve(session_id: str):
+    session = await get_session(session_id)
+    state = session["state"]
+    workflow, eligible, _ = _repeat_revenue_batch(state)
+    approved_ids = []
+    for opp in state["opportunities"]:
+        if any(e["id"] == opp["id"] for e in eligible):
+            opp["status"] = "Sent"
+            opp["sent_at"] = now_iso()
+            approved_ids.append(opp["id"])
+            append_audit(state, opp["id"], opp["customer_id"], "Approved (Batch)", "Owner",
+                         f"Approved as part of '{workflow['name'] if workflow else 'Repeat Revenue'}' seasonal tune-up batch. Demo simulation.")
+            append_audit(state, opp["id"], opp["customer_id"], "Sent", "System",
+                         f"Batch message dispatched via {opp['draft_channel']} (simulated).")
+    await save_session(session_id, state)
+    return {"approved_ids": approved_ids, "approved_count": len(approved_ids)}
+
+
+# ------------------------ Owner Insights ------------------------
+@api_router.get("/demo/{session_id}/insights")
+async def insights(session_id: str):
+    session = await get_session(session_id)
+    state = session["state"]
+    workflows = state["workflows"]
+    opps = state["opportunities"]
+    rows = []
+    for w in workflows:
+        w_opps = [o for o in opps if o["workflow_id"] == w["id"]]
+        approved = [o for o in w_opps if o["status"] in ("Sent", "Appointment Booked")]
+        booked = [o for o in w_opps if o["status"] == "Appointment Booked"]
+        pipeline = sum(o["expected_value"] for o in w_opps if o["status"] not in ("Lost", "Appointment Booked", "Sent"))
+        recorded = sum(o["expected_value"] for o in booked)
+        rows.append({
+            "workflow_id": w["id"],
+            "workflow_name": w["name"],
+            "paused": w.get("paused", False),
+            "opportunities_surfaced": len(w_opps),
+            "approved_follow_ups": len(approved),
+            "simulated_bookings": len(booked),
+            "pipeline_advanced": pipeline,
+            "pipeline_label": "Estimated",
+            "recorded_results": recorded,
+            "recorded_label": "Recorded in demo",
+        })
+
+    # Pick top row by simulated bookings, then by recorded results, then by approved follow-ups.
+    ranked = sorted(rows, key=lambda r: (r["simulated_bookings"], r["recorded_results"], r["approved_follow_ups"]), reverse=True)
+    top = ranked[0] if ranked else None
+    recommendation = None
+    if top:
+        if top["simulated_bookings"] > 0:
+            recommendation = (
+                f"In this demo session, {top['workflow_name']} shows the most Recorded in demo activity "
+                f"({top['simulated_bookings']} simulated bookings). Consider reviewing its pending drafts first."
+            )
+        elif top["approved_follow_ups"] > 0:
+            recommendation = (
+                f"{top['workflow_name']} has the most approved follow-ups so far in this demo. "
+                f"Consider auditing its message tone before broader use."
+            )
+        else:
+            recommendation = "Not enough activity in this demo session to compare workflows yet. Try approving a few drafts to see this update."
+
+    return {
+        "rows": rows,
+        "recommendation": recommendation,
+        "disclaimer": "Comparisons use demo-session data only. No causal ROI or guaranteed lift is claimed.",
+    }
 
 
 # ------------------------ Workflows ------------------------

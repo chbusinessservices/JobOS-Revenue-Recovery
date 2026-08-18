@@ -117,6 +117,23 @@ h1, h2, h3, h4, .jobos-heading {
   animation: jobos-fade-up 240ms ease-out both;
 }
 
+/* Print-friendly report view */
+@media print {
+  html, body, #root { background: #ffffff !important; color: #0A0F1C !important; }
+  aside, header, [data-testid="mobile-nav"], [data-testid="notifications-btn"],
+  [data-testid="exit-demo-btn"], [data-testid="print-report-btn"],
+  [data-testid="export-report-btn"], [data-testid="methodology-btn"], [data-testid="impact-period"] {
+    display: none !important;
+  }
+  main { padding: 0 !important; }
+  .jobos-print-area * { color: #0A0F1C !important; }
+  .jobos-print-area .bg-\[\#111827\], .jobos-print-area [class*="bg-"] {
+    background: #ffffff !important;
+    border-color: #E5E7EB !important;
+  }
+  .jobos-print-area .text-slate-400, .jobos-print-area .text-slate-500 { color: #4B5563 !important; }
+}
+
 /* Landing background */
 .jobos-landing-bg {
   background:
