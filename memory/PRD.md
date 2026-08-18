@@ -37,7 +37,7 @@ uses fictional data for Northstar Heating & Air in Newark, New Jersey.
 - Workflow builder uses editable panels (no drag-and-drop), with pause toggle and Test button.
 - Fictional data only, addresses like `maya.thompson@example.com`.
 
-## What's been implemented (2026-02-18)
+## What's been implemented (2026-08-18)
 - Full backend API for demo sessions, dashboard, opportunities (list/detail/action/regenerate),
   approvals queue, workflow CRUD + test, impact report, audit log, reset.
 - 8 pages: Landing, Revenue Pulse Dashboard, Opportunity Inbox (tabs/search/sort), Opportunity
@@ -50,7 +50,7 @@ uses fictional data for Northstar Heating & Air in Newark, New Jersey.
 - Hybrid AI drafting with strict JSON validation and seeded fallback.
 - Responsive mobile layout with card-based inbox and horizontal mobile nav.
 
-## Iteration 2 additions (2026-02-19) — tested 100% backend + frontend
+## Iteration 2 additions (2026-08-18) — tested 100% backend + frontend
 - **Snooze Options** with 5 modes (1h, Tomorrow 9AM, Next business day, Next week, Custom).
   Auto-wake when `snoozed_until` passes; audit adds `Snoozed` + `Snooze Ended` events.
   Snooze Queue tab in Opportunity Inbox; Approval Center excludes snoozed items.
