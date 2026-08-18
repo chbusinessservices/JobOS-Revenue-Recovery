@@ -1,0 +1,41 @@
+{
+  "summary": "Iteration 3 code-review remediation regression testing. Verified 4 low-risk fixes (SessionContext catch logs, OpportunityDetailPage source_facts_used content-based keys, BatchApprovalCard criteria content-based keys, CustomerProfilePage useMemo moved above early return). Ran full backend pytest suite (8/8 pass) plus a full frontend E2E: baseline → Maya approve+send → simulate booking → banner shown → curl-verified dashboard/impact both return $6,710/18 → customer profile page loads without hook errors → batch approval card renders with 4 criteria items and confirm button label 'Approve 2 Demo Drafts' unchanged → snooze menu on Carlos shows 4 presets + custom input + wake-now works → reset restores $6,285/17. Console showed 0 key-prop warnings and 0 hook-related errors during the full Maya E2E path. No regressions.",
+  "tested_scope": ["backend", "frontend", "integration"],
+  "passed": [
+    "Backend pytest /app/backend/tests/test_new_features.py: 8/8 pass in 3.34s (snooze, wake, auto-wake, snoozed-excluded-from-approvals, snoozed-category-filter, insights, batch-eligibility, batch-approve)",
+    "Landing → Enter Demo Workspace navigates to /app/dashboard with baseline $6,285 / 17 rendered",
+    "OpportunityDetailPage /app/opportunities/opp-maya renders 4 source_facts_used <li> items with content-based keys (no 'unique key' console warnings)",
+    "Maya Approve+Send transitions to Sent (simulate-booking-btn visible)",
+    "Simulate booking → confirm-book-btn → appointment-booked-banner visible",
+    "Direct curl verified after Maya booking: dashboard.kpis.recovered_revenue=6710, appointments_booked=18; impact.recorded_revenue=6710/18 (matches spec)",
+    "CustomerProfilePage /app/customers/cust-maya loads (data-testid=customer-profile-page present); no 'rendered fewer hooks' errors — useMemo above early return works",
+    "BatchApprovalCard on /app/approvals: 1 card visible, criteria list has exactly 4 items with unique content-based keys, no key warnings",
+    "Batch review dialog confirm button text EXACTLY 'Approve 2 Demo Drafts' (unchanged)",
+    "Snooze on opp-carlos: 4 preset buttons + custom input rendered; preset click → wake-now-btn appears; wake-now restores actionable state",
+    "Settings → Reset Demo Data restores $6,285 baseline on dashboard",
+    "SessionContext: fresh incognito load auto-creates POST /demo/session and stores in localStorage.jobos.session_id; catch block now logs via console.warn (visible in console output) instead of silently swallowing",
+    "Console during full Maya E2E: 0 'each child in a list should have a unique key prop' warnings, 0 React hook errors"
+  ],
+  "failed": [],
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features.py",
+    "/app/test_reports/pytest/new_features.xml"
+  ],
+  "critical_code_review_comments": [
+    "Fixes look correct and minimal. Content-based keys (fact-{i}-{slice(0,24)}, criteria-{i}-{slice(0,24)}) still incorporate index — technically that alone would satisfy React, but the content slice adds stability across reorders. Fine.",
+    "SessionContext console.warn is appropriate for a demo app; in production the pattern of falling back to a new session on any 4xx/5xx could mask real backend outages — consider distinguishing 404 (stale id) from 5xx (backend down) to avoid silently churning sessions.",
+    "CustomerProfilePage: useMemo dependency is [ledger, audit] which are derived (data?.ledger || []) recomputed each render. That means the memo will still recompute every render because the array identities change. Not a bug (rules-of-hooks fix is correct), but the memoization provides no actual perf benefit unless you memoize with [data] or the underlying arrays directly. Minor code-quality note only."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "100%", "frontend": "100%" },
+  "seed_data_creation": "None — each test used a fresh POST /demo/session",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 4 code-review fixes verified: (1) SessionContext catch now logs, (2) opportunity source_facts keys content-based, (3) batch criteria keys content-based, (4) customer profile useMemo placed above early return. Backend regression tests at /app/backend/tests/test_new_features.py remain green. Dashboard and Impact still agree after Maya booking ($6,710/18) and after reset ($6,285/17). Note for future Playwright runs: assert dashboard/impact values via curl for reliability — the /app/dashboard React page can take 2-3s to re-render KPIs after nav, page.content() before that returns stale HTML."
+}

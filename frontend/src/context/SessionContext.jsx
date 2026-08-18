@@ -21,7 +21,16 @@ export function SessionProvider({ children }) {
             return;
           }
         } catch (e) {
-          // fall through and create
+          const status = e?.response?.status;
+          if (status && status >= 500) {
+            console.warn("Session backend unavailable — keeping existing session and stopping bootstrap:", e);
+            if (active) {
+              setSessionId(existing);
+              setReady(true);
+            }
+            return;
+          }
+          console.warn("Session id not found — creating a new demo session:", e);
         }
       }
       const { data } = await api.post("/demo/session");

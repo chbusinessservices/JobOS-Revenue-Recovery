@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "@/api/client";
 import { useSession } from "@/context/SessionContext";
@@ -20,8 +20,23 @@ export default function CustomerProfilePage() {
     api.get(`/demo/${sessionId}/customers/${id}`).then(({ data }) => setData(data));
   }, [sessionId, id]);
 
+  const timelineItems = useMemo(
+    () => {
+      if (!data) return [];
+      return [...(data.ledger || []), ...(data.audit || [])]
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 12);
+    },
+    [data]
+  );
+
+  const opps = data?.opportunities || [];
+  const audit = data?.audit || [];
+  const ledger = data?.ledger || [];
+
   if (!data) return <div className="text-slate-400">Loading customer…</div>;
-  const { customer: c, opportunities, audit, ledger } = data;
+  const c = data.customer;
+  const opportunities = opps;
 
   return (
     <div className="space-y-5" data-testid="customer-profile-page">
@@ -72,7 +87,7 @@ export default function CustomerProfilePage() {
         <Card className="bg-[#111827] border-white/10 p-5">
           <div className="jobos-heading font-semibold mb-3">Ledger &amp; timeline</div>
           <ul className="space-y-3">
-            {[...ledger, ...audit].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 12).map((e) => (
+            {timelineItems.map((e) => (
               <li key={e.id} className="flex gap-2 items-start text-sm border-b border-white/5 pb-2 last:border-none">
                 <span className="jobos-dot mt-2" style={{ background: e.amount ? "#00E5A8" : "#7C5CFC" }} />
                 <div className="flex-1">

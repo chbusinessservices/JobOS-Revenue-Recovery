@@ -167,7 +167,7 @@ export default function OpportunityDetailPage() {
               <div className="mt-3 border-t border-white/5 pt-3">
                 <div className="text-xs uppercase tracking-widest text-slate-500 mb-1">Source facts used</div>
                 <ul className="text-xs text-slate-400 space-y-1">
-                  {o.source_facts_used.map((f, i) => <li key={i}>· {f}</li>)}
+                  {o.source_facts_used.map((f, i) => <li key={`fact-${i}-${f.slice(0, 24)}`}>· {f}</li>)}
                 </ul>
               </div>
             )}

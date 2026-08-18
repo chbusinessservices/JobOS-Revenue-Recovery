@@ -54,6 +54,11 @@ uses fictional data for Northstar Heating & Air in Newark, New Jersey.
 - Fixed a double-count in `compute_impact()`: the Impact Report added `Appointment Booked` opp values on top of the already-incremented `business.recorded_recovered_revenue`, so Dashboard and Impact would disagree after any booking. Impact now reads directly from the persisted business KPIs so Dashboard, Ledger, and Impact Report all show the same numbers ($6,285/17 baseline → $6,710/18 after Maya).
 - Hardened `build_seed_state()` with `copy.deepcopy(BUSINESS)` so each new/reset session gets an isolated `business` dict (prevents any future cross-session mutation of the seed constant).
 
+## Iteration 3 — code review remediation (2026-08-18) — tested 100%/100%
+- SessionContext: replaced silent empty catch with a warn log; also distinguishes 5xx (keep existing session) from stale/404 (create fresh session) to avoid session churn during transient backend outages.
+- OpportunityDetailPage / BatchApprovalCard: list keys now content-based (`fact-{i}-{slice}`, `criteria-{i}-{slice}`) instead of raw index — stable across reorders.
+- CustomerProfilePage: `useMemo` moved above the early return (rules-of-hooks) and now depends on the stable `data` reference so the memo actually memoizes.
+
 ## Iteration 2 additions (2026-08-18) — tested 100% backend + frontend
 - **Snooze Options** with 5 modes (1h, Tomorrow 9AM, Next business day, Next week, Custom).
   Auto-wake when `snoozed_until` passes; audit adds `Snoozed` + `Snooze Ended` events.

@@ -65,7 +65,7 @@ export default function BatchApprovalCard({ onDone }) {
           <div>
             <div className="text-xs uppercase tracking-widest text-slate-500 mb-2">Campaign criteria</div>
             <ul className="text-xs text-slate-300 space-y-1">
-              {criteria.map((c, i) => <li key={i}>· {c}</li>)}
+              {criteria.map((c, i) => <li key={`criteria-${i}-${c.slice(0, 24)}`}>· {c}</li>)}
             </ul>
           </div>
           <div>
