@@ -33,7 +33,7 @@ export default function LandingPage() {
           <Button
             onClick={enter}
             disabled={!ready}
-            data-testid="enter-demo-workspace-btn"
+            data-testid="enter-demo-workspace"
             className="bg-[#7C5CFC] hover:bg-[#6a4de0] text-white font-medium px-6 py-6 rounded-xl text-base transition-colors"
           >
             {ready ? "Enter Demo Workspace" : "Preparing demo…"} <ArrowRight size={17} className="ml-2" />

@@ -208,7 +208,7 @@ export default function OpportunityDetailPage() {
 
             {!isTerminal && (
               <div className="flex flex-wrap gap-2 mt-4">
-                <Button onClick={approveAndSend} className="bg-[#00E5A8] hover:bg-[#00c896] text-slate-900 font-semibold" data-testid="approve-and-send-btn">
+                <Button onClick={approveAndSend} className="bg-[#00E5A8] hover:bg-[#00c896] text-slate-900 font-semibold" data-testid="approve-send">
                   <Check size={15} className="mr-1" /> Approve and Send
                 </Button>
                 <SnoozeMenu onSnooze={(payload) => act("snooze", payload)} />
@@ -239,7 +239,7 @@ export default function OpportunityDetailPage() {
             {o.status === "Sent" && (
               <div className="mt-4 border-t border-white/5 pt-4">
                 <div className="text-sm text-slate-300">Message state: <StatusBadge status="Sent" /></div>
-                <Button onClick={() => setShowBook(true)} className="mt-3 bg-[#7C5CFC] hover:bg-[#6a4de0]" data-testid="simulate-booking-btn">
+                <Button onClick={() => setShowBook(true)} className="mt-3 bg-[#7C5CFC] hover:bg-[#6a4de0]" data-testid="simulate-appointment-booked">
                   <CalendarCheck size={15} className="mr-1" /> Simulate customer reply → Book appointment
                 </Button>
               </div>

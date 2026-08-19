@@ -120,7 +120,7 @@ export default function OpportunityInboxPage() {
                   <td className="py-3 pr-3"><StatusBadge status={o.status} /></td>
                   <td className="py-3 pr-3 text-slate-400 max-w-[260px] truncate">{o.recommended_action}</td>
                   <td className="py-3 pr-3 text-right">
-                    <Button size="sm" onClick={() => nav(`/app/opportunities/${o.id}`)} data-testid={`review-${o.id}`} className="bg-[#7C5CFC] hover:bg-[#6a4de0]">Review</Button>
+                    <Button size="sm" onClick={() => nav(`/app/opportunities/${o.id}`)} data-testid={o.id === "opp-maya" ? "maya-opportunity" : `review-${o.id}`} className="bg-[#7C5CFC] hover:bg-[#6a4de0]">Review</Button>
                   </td>
                 </tr>
               ))}
@@ -136,7 +136,7 @@ export default function OpportunityInboxPage() {
           {items.map((o) => (
             <button
               key={o.id}
-              data-testid={`inbox-card-${o.id}`}
+              data-testid={o.id === "opp-maya" ? "maya-opportunity" : `inbox-card-${o.id}`}
               onClick={() => nav(`/app/opportunities/${o.id}`)}
               className="w-full text-left jobos-surface-2 p-4"
             >

@@ -55,7 +55,7 @@ export default function SettingsPage() {
         </p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline" className="mt-3 bg-transparent border-amber-500/30 text-amber-200 hover:bg-amber-500/10" data-testid="reset-demo-btn-settings">
+            <Button variant="outline" className="mt-3 bg-transparent border-amber-500/30 text-amber-200 hover:bg-amber-500/10" data-testid="demo-reset">
               <RefreshCcw size={14} className="mr-1" /> Reset demo data
             </Button>
           </AlertDialogTrigger>

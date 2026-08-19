@@ -59,6 +59,11 @@ uses fictional data for Northstar Heating & Air in Newark, New Jersey.
 - OpportunityDetailPage / BatchApprovalCard: list keys now content-based (`fact-{i}-{slice}`, `criteria-{i}-{slice}`) instead of raw index — stable across reorders.
 - CustomerProfilePage: `useMemo` moved above the early return (rules-of-hooks) and now depends on the stable `data` reference so the memo actually memoizes.
 
+## Iteration 4 — stable walkthrough IDs + non-public Playwright suite (2026-08-18)
+- Added / renamed stable `data-testid` attributes on the public walkthrough controls (no visual or behavior changes): `enter-demo-workspace`, `nav-dashboard`, `nav-opportunities`, `maya-opportunity` (attached to Maya's Review button on desktop and to the Maya inbox card on mobile so it is always the primary navigation trigger), `maya-approval-review`, `approve-send`, `simulate-appointment-booked`, `nav-impact`, `demo-reset`.
+- Created `/app/tests/walkthrough/` — a non-public Playwright suite that runs at 1440x900 against the deployed production URL, records the full session to 1080p WebM, and saves 6 named screenshots (baseline dashboard, Maya detail, approval center, ledger after send, dashboard after, impact report). Lives outside `/app/frontend` and `/app/backend`, is not imported by the public app, has its own `package.json` + `.gitignore`.
+- E2E flow with the new stable IDs verified live on the preview URL: Dashboard baseline `$6,285/17` → after Maya loop `$6,710/18` (dashboard and impact match).
+
 ## Iteration 2 additions (2026-08-18) — tested 100% backend + frontend
 - **Snooze Options** with 5 modes (1h, Tomorrow 9AM, Next business day, Next week, Custom).
   Auto-wake when `snoozed_until` passes; audit adds `Snoozed` + `Snooze Ended` events.

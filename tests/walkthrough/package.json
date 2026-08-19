@@ -1,0 +1,14 @@
+{
+  "name": "jobos-walkthrough",
+  "private": true,
+  "description": "Non-public Playwright walkthrough for JobOS Revenue Recovery. Not part of the shipped product.",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0"
+  }
+}

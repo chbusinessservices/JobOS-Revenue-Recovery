@@ -10,7 +10,7 @@ import { useState } from "react";
 
 const NAV = [
   { to: "/app/dashboard", label: "Revenue Pulse", icon: LayoutDashboard, id: "dashboard" },
-  { to: "/app/inbox", label: "Opportunity Inbox", icon: Inbox, id: "inbox" },
+  { to: "/app/inbox", label: "Opportunity Inbox", icon: Inbox, id: "opportunities" },
   { to: "/app/approvals", label: "Approval Center", icon: ShieldCheck, id: "approvals" },
   { to: "/app/workflows", label: "Workflow Builder", icon: Workflow, id: "workflows" },
   { to: "/app/impact", label: "Impact Report", icon: LineChart, id: "impact" },

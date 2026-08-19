@@ -58,7 +58,7 @@ export default function ApprovalCenterPage() {
               <div className="lg:col-span-1 flex flex-col justify-between gap-2">
                 <StatusBadge status={o.status} />
                 <div className="flex flex-col gap-2 mt-auto">
-                  <Button onClick={() => nav(`/app/opportunities/${o.id}`)} className="bg-[#7C5CFC] hover:bg-[#6a4de0]" data-testid={`approval-open-${o.id}`}>
+                  <Button onClick={() => nav(`/app/opportunities/${o.id}`)} className="bg-[#7C5CFC] hover:bg-[#6a4de0]" data-testid={o.id === "opp-maya" ? "maya-approval-review" : `approval-open-${o.id}`}>
                     Open review
                   </Button>
                 </div>

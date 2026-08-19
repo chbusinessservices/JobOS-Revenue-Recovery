@@ -1,0 +1,52 @@
+{
+  "summary": "Frontend regression for JobOS Revenue Recovery iteration 4 (stable data-testid rename/addition + non-public Playwright suite). Verified all 9 stable IDs present, full Maya E2E loop reproduces $6,710/18 in Dashboard and Impact, Approval Center batch card and maya-approval-review work, Settings demo-reset restores $6,285/17 baseline, Snooze (4 presets + custom), Workflow Builder pause toggles, and Impact Owner Insights (3 rows + recommendation) all render. Non-public Playwright suite exists at /app/tests/walkthrough and is not referenced from /app/frontend/src or /app/backend.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "stable_testid_verification": {
+    "enter-demo-workspace": "PASS (landing)",
+    "nav-dashboard": "PASS (sidebar)",
+    "nav-opportunities": "PASS (sidebar, renamed from nav-inbox; label 'Opportunity Inbox' unchanged)",
+    "nav-impact": "PASS (sidebar)",
+    "maya-opportunity (desktop table)": "PASS (visible on 1440x900 desktop inbox)",
+    "maya-opportunity (mobile card)": "PASS (visible on 400x900 mobile inbox, click navigates to /app/opportunities/opp-maya)",
+    "maya-approval-review": "PASS (present on /app/approvals in baseline state; click navigates to /app/opportunities/opp-maya)",
+    "approve-send": "PASS (visible on Maya detail when not terminal)",
+    "simulate-appointment-booked": "PASS (appears after approve-send + dialog-continue-btn)",
+    "demo-reset": "PASS (Settings; confirm-reset-btn present; reset restores $6,285/17)"
+  },
+  "e2e_maya_loop": {
+    "baseline_dashboard": "$6,285 / 17 appointments — PASS",
+    "after_book_dashboard": "$6,710 / 18 appointments — PASS",
+    "after_book_impact": "impact-rec-revenue=$6,710, impact-rec-appointments=18 — PASS",
+    "appointment-booked-banner": "visible after confirm-book-btn — PASS",
+    "after_reset_dashboard": "$6,285 / 17 restored — PASS"
+  },
+  "approval_center_regression": "Batch card 'Seasonal Tune-Up Reactivation' displays $548, 2 eligible recipients, 'Review batch (2)' button. Note: request text referred to card as 'Approve 2 Demo Drafts' but actual title is 'Seasonal Tune-Up Reactivation' — this matches iteration 3 state so no change/regression. Denise + Aisha are the 2 recipients (visible inside batch review).",
+  "regression_other": {
+    "snooze": "PASS — snooze-btn opens menu with snooze-preset-1h, snooze-preset-tomorrow_9am, snooze-preset-next_business, snooze-preset-next_week, snooze-custom-input, snooze-custom-apply",
+    "workflow_builder": "PASS — 3 workflow cards (wf-lead-rescue, wf-estimate-recovery, wf-repeat-revenue) each with pause-toggle-* / save-workflow-* / test-workflow-*",
+    "owner_insights": "PASS — owner-insights container, insights-table with 3 rows (insight-wf-lead-rescue, insight-wf-estimate-recovery, insight-wf-repeat-revenue), insights-recommendation, insights-disclaimer"
+  },
+  "non_public_suite_check": {
+    "location": "/app/tests/walkthrough/",
+    "files_present": ["README.md", "package.json", "playwright.config.js", "tests/walkthrough.spec.js"],
+    "referenced_from_frontend_or_backend": false,
+    "note": "Suite was not executed per instructions"
+  },
+  "test_report_links": ["/app/test_reports/iteration_4.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "No new issues found. Testid additions are non-visual and non-behavioral as advertised.",
+    "Minor: request wording 'Approve 2 Demo Drafts' does not match rendered batch card title 'Seasonal Tune-Up Reactivation' — pre-existing (iteration 3), not a regression."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only run)", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 9 stable testids verified; full Maya loop deterministically produces $6,710/18 across Dashboard and Impact then resets to $6,285/17. Non-public Playwright suite files exist at /app/tests/walkthrough/ and are not wired into the app. Mobile inbox uses [data-testid=mobile-nav-opportunities] for navigation; use ':visible' filter when clicking maya-opportunity because desktop table row + mobile card share the same testid."
+}
